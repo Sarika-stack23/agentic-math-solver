@@ -118,7 +118,7 @@ export const NCERTQuizPanel: React.FC = () => {
                 try {
                     const parsed = JSON.parse(dataStr);
                     if (parsed.content) parsedContent = parsed.content;
-                } catch(e) {}
+                } catch {}
                 
                 fullResponse += parsedContent;
                 setState(prev => ({ ...prev, feedback: fullResponse, showStuckMenu: false }));

@@ -22,7 +22,7 @@ export const GraphPanel: React.FC = () => {
             const cappedY = Math.max(-50, Math.min(50, y));
             points.push({ x: Number(x.toFixed(2)), y: Number(cappedY.toFixed(2)) });
           }
-        } catch (e) {
+        } catch {
           // Skip invalid points for this x
         }
       }
@@ -72,7 +72,7 @@ export const GraphPanel: React.FC = () => {
                         });
                         const data = await res.json();
                         alert(`Derivative: ${data.result}`);
-                    } catch (e) { alert('Error computing derivative'); }
+                    } catch { alert('Error computing derivative'); }
                 }}>d/dx</button>
                 <button className="btn btn-outline" onClick={async () => {
                     try {
@@ -83,7 +83,7 @@ export const GraphPanel: React.FC = () => {
                         });
                         const data = await res.json();
                         alert(`Integral: ${data.result}`);
-                    } catch (e) { alert('Error computing integral'); }
+                    } catch { alert('Error computing integral'); }
                 }}>∫ dx</button>
                 <button className="btn btn-outline" onClick={async () => {
                     try {
@@ -94,7 +94,7 @@ export const GraphPanel: React.FC = () => {
                         });
                         const data = await res.json();
                         alert(`Roots (f(x)=0): ${data.result}`);
-                    } catch (e) { alert('Error finding roots'); }
+                    } catch { alert('Error finding roots'); }
                 }}>Solve f(x)=0</button>
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
-import { Send, Image as ImageIcon, HelpCircle, ThumbsUp, ThumbsDown, Copy, FileText, Camera, X } from 'lucide-react';
+import { Send, Image as ImageIcon, ThumbsUp, ThumbsDown, Copy, FileText, Camera, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface Message {
@@ -127,7 +127,7 @@ export const ChatInterface: React.FC = () => {
               const data = await response.json();
               const solutionContent = data.solution ? `**Extracted Math:**\n\n${data.extracted_math}\n\n**Solution:**\n\n${data.solution}` : `**Extracted Math:**\n\n${data.extracted_math}`;
               setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: solutionContent } : m));
-            } catch (error) {
+            } catch {
               setMessages(prev => prev.map(m => m.id === assistantMsgId ? { ...m, content: 'Failed to process image.' } : m));
             } finally {
               setIsLoading(false);
@@ -196,7 +196,7 @@ export const ChatInterface: React.FC = () => {
                   try {
                     const parsed = JSON.parse(data);
                     if (parsed.content) parsedContent = parsed.content;
-                  } catch (e) {}
+                  } catch {}
                   
                   setMessages(prev => prev.map(m => 
                     m.id === assistantMsgId ? { ...m, content: m.content + parsedContent } : m
@@ -274,10 +274,16 @@ export const ChatInterface: React.FC = () => {
       
       <div className="glass" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRadius: '12px' }}>
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', color: 'hsl(var(--text-secondary))', marginTop: 'auto', marginBottom: 'auto' }}>
-            <HelpCircle size={48} style={{ opacity: 0.5, marginBottom: '1rem', margin: '0 auto' }} />
-            <h3>How can I help you with math today?</h3>
-            <p>Ask me to solve equations, or upload a photo of a math problem!</p>
+          <div className="animate-fade-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', opacity: 0.8 }}>
+            <h2 className="text-gradient" style={{ fontSize: '2rem', marginBottom: '1rem' }}>How can I help you learn today?</h2>
+            <p style={{ color: 'hsl(var(--text-secondary))', marginBottom: '2rem' }}>Ask any math question or upload a document to get started.</p>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '600px' }}>
+              {["Solve a quadratic equation", "Explain calculus limits", "Help with trigonometry", "Graph a parabola"].map(q => (
+                <button key={q} className="btn glass-panel" style={{ color: 'hsl(var(--text-primary))', fontSize: '0.9rem' }} onClick={() => setInput(q)}>
+                  {q}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         
@@ -316,8 +322,12 @@ export const ChatInterface: React.FC = () => {
         )}
 
         {isLoading && (
-          <div style={{ alignSelf: 'flex-start', padding: '1rem', color: 'hsl(var(--text-secondary))' }}>
-            Thinking...
+          <div className="glass animate-fade-in" style={{ alignSelf: 'flex-start', padding: '1rem 1.5rem', borderRadius: '16px', color: 'hsl(var(--text-secondary))' }}>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '24px' }}>
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
+            </div>
           </div>
         )}
         <div ref={messagesEndRef} />
