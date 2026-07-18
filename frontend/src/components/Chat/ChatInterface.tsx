@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
-import { Send, Image, HelpCircle } from 'lucide-react';
+import { Send, Image as ImageIcon, HelpCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  imageUrl?: string;
 }
 
 export const ChatInterface: React.FC = () => {
@@ -16,6 +17,7 @@ export const ChatInterface: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -60,33 +62,96 @@ export const ChatInterface: React.FC = () => {
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
-        const chunkValue = decoder.decode(value);
-        
-        // SSE parsing
-        const lines = chunkValue.split('\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') {
-              done = true;
-              break;
-            }
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                setMessages(prev => prev.map(m => 
-                  m.id === assistantMsgId ? { ...m, content: m.content + parsed.content } : m
-                ));
+        if (value) {
+            const chunkValue = decoder.decode(value);
+            
+            // SSE parsing
+            const lines = chunkValue.split('\n');
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') {
+                  done = true;
+                  break;
+                }
+                try {
+                  const parsed = JSON.parse(data);
+                  if (parsed.content) {
+                    setMessages(prev => prev.map(m => 
+                      m.id === assistantMsgId ? { ...m, content: m.content + parsed.content } : m
+                    ));
+                  }
+                } catch (e) {
+                  // Some chunks might just be plain text if the backend yielded raw tokens
+                  if (data && data !== '[DONE]' && !data.startsWith('{')) {
+                      setMessages(prev => prev.map(m => 
+                          m.id === assistantMsgId ? { ...m, content: m.content + data } : m
+                      ));
+                  }
+                }
               }
-            } catch (e) {
-              console.error("Error parsing SSE data", e);
             }
-          }
         }
       }
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "An error occurred while connecting to the server." }]);
+      setMessages(prev => prev.map(m => 
+          m.id === assistantMsgId ? { ...m, content: "An error occurred while connecting to the server." } : m
+      ));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    
+    // reset input
+    e.target.value = '';
+
+    // Create object URL for preview
+    const objectUrl = URL.createObjectURL(file);
+    const userMsgId = Date.now().toString();
+    
+    setMessages(prev => [...prev, { 
+      id: userMsgId, 
+      role: 'user', 
+      content: 'Uploaded an image',
+      imageUrl: objectUrl 
+    }]);
+
+    setIsLoading(true);
+    const assistantMsgId = (Date.now() + 1).toString();
+    setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: 'Extracting and solving...' }]);
+
+    try {
+      const token = await user.getIdToken();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('solve', 'true');
+
+      const response = await fetch('http://localhost:8080/api/v1/vision/extract', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+      const data = await response.json();
+      
+      const solutionContent = data.solution ? `**Extracted Math:**\n\n${data.extracted_math}\n\n**Solution:**\n\n${data.solution}` : `**Extracted Math:**\n\n${data.extracted_math}`;
+
+      setMessages(prev => prev.map(m => 
+        m.id === assistantMsgId ? { ...m, content: solutionContent } : m
+      ));
+    } catch (error) {
+      console.error(error);
+      setMessages(prev => prev.map(m => 
+        m.id === assistantMsgId ? { ...m, content: 'Failed to process image.' } : m
+      ));
     } finally {
       setIsLoading(false);
     }
@@ -99,9 +164,9 @@ export const ChatInterface: React.FC = () => {
       <div className="glass" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRadius: '12px' }}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: 'hsl(var(--text-secondary))', marginTop: 'auto', marginBottom: 'auto' }}>
-            <HelpCircle size={48} style={{ opacity: 0.5, marginBottom: '1rem' }} />
+            <HelpCircle size={48} style={{ opacity: 0.5, marginBottom: '1rem', margin: '0 auto' }} />
             <h3>How can I help you with math today?</h3>
-            <p>Ask me to solve equations, differentiate, or plot functions.</p>
+            <p>Ask me to solve equations, or upload a photo of a math problem!</p>
           </div>
         )}
         
@@ -114,7 +179,10 @@ export const ChatInterface: React.FC = () => {
             borderRadius: '12px',
             maxWidth: '85%'
           }}>
-            <Latex>{msg.content}</Latex>
+            {msg.imageUrl && (
+                <img src={msg.imageUrl} alt="Uploaded" style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '0.5rem' }} />
+            )}
+            {msg.content && <Latex>{msg.content}</Latex>}
           </div>
         ))}
         {isLoading && (
@@ -126,8 +194,21 @@ export const ChatInterface: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="button" className="btn btn-outline" title="Upload Image (Phase 10)">
-          <Image size={20} />
+        <input 
+            type="file" 
+            accept="image/*" 
+            style={{ display: 'none' }} 
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+        />
+        <button 
+            type="button" 
+            className="btn btn-outline" 
+            title="Upload Math Image"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
+        >
+          <ImageIcon size={20} />
         </button>
         <input 
           type="text" 

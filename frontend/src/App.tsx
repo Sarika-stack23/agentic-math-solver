@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import { MessageSquare, LayoutDashboard, BookOpen, LogOut, Calculator } from 'lucide-react';
+import { MessageSquare, LayoutDashboard, BookOpen, LogOut, Calculator, LineChart } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ChatInterface } from './components/Chat/ChatInterface';
 import { ProgressDashboard } from './components/Dashboard/ProgressDashboard';
 import { NCERTQuizPanel } from './components/Quiz/NCERTQuizPanel';
+import { GraphPanel } from './components/Graphing/GraphPanel';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -60,6 +61,9 @@ const Sidebar: React.FC = () => {
         <NavLink to="/quiz" style={navStyle}>
           <BookOpen size={20} /> NCERT Quiz
         </NavLink>
+        <NavLink to="/graph" style={navStyle}>
+          <LineChart size={20} /> Graphing
+        </NavLink>
         <NavLink to="/dashboard" style={navStyle}>
           <LayoutDashboard size={20} /> Dashboard
         </NavLink>
@@ -92,6 +96,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><AppLayout><ChatInterface /></AppLayout></ProtectedRoute>} />
           <Route path="/quiz" element={<ProtectedRoute><AppLayout><NCERTQuizPanel /></AppLayout></ProtectedRoute>} />
+          <Route path="/graph" element={<ProtectedRoute><AppLayout><GraphPanel /></AppLayout></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><AppLayout><ProgressDashboard /></AppLayout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
