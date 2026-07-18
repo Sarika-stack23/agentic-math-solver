@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     use_gemini: bool = True  # Feature flag: True = Gemini primary, False = Groq
     gemini_primary_model: str = "gemini-2.0-flash"
-    gemini_fallback_model: str = "gemini-1.5-flash"
+    gemini_fallback_model: str = "gemini-flash-latest"
     gemini_vision_model: str = "gemini-2.0-flash"
     gemini_temperature: float = 0.1
     gemini_max_tokens: int = 2048
