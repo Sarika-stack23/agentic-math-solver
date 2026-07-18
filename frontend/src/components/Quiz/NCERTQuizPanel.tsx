@@ -112,8 +112,13 @@ export const NCERTQuizPanel: React.FC = () => {
             if (line.startsWith('data: ')) {
                 const dataStr = line.slice(6);
                 if (dataStr.trim() === "[DONE]") continue;
-                // Backend yields raw string chunks, not JSON
-                fullResponse += dataStr;
+                let parsedContent = dataStr;
+                try {
+                    const parsed = JSON.parse(dataStr);
+                    if (parsed.content) parsedContent = parsed.content;
+                } catch(e) {}
+                
+                fullResponse += parsedContent;
                 setState(prev => ({ ...prev, feedback: fullResponse, showStuckMenu: false }));
             }
         }
@@ -206,7 +211,7 @@ export const NCERTQuizPanel: React.FC = () => {
         <button className="btn btn-outline" onClick={() => handleAction('Give me a small hint to start solving this')} disabled={isLoading || !displayQuestion}>💡 Hint</button>
         <button className="btn btn-outline" onClick={() => handleAction('Show me the first step to solve this')} disabled={isLoading || !displayQuestion}>📖 Steps</button>
         <button className="btn btn-primary" onClick={() => handleAction('Show me the full answer for this')} disabled={isLoading || !displayQuestion}>✅ Answer</button>
-        <button className="btn btn-outline" onClick={() => setState(prev => ({ ...prev, showStuckMenu: !prev.showStuckMenu }))} disabled={!displayQuestion}>❓ Ask AI</button>
+        <button className="btn btn-outline" onClick={() => setState(prev => ({ ...prev, showStuckMenu: !prev.showStuckMenu }))} disabled={isLoading || !displayQuestion}>❓ Ask AI</button>
       </div>
 
       {state.showStuckMenu && (

@@ -191,12 +191,17 @@ export const ChatInterface: React.FC = () => {
                   break;
                 }
                 try {
-                  // The backend yields raw string chunks, not JSON
+                  let parsedContent = data;
+                  try {
+                    const parsed = JSON.parse(data);
+                    if (parsed.content) parsedContent = parsed.content;
+                  } catch (e) {}
+                  
                   setMessages(prev => prev.map(m => 
-                    m.id === assistantMsgId ? { ...m, content: m.content + data } : m
+                    m.id === assistantMsgId ? { ...m, content: m.content + parsedContent } : m
                   ));
                 } catch (e) {
-                  console.error("SSE parse error", e);
+                  console.error("SSE update error", e);
                 }
               }
             }
