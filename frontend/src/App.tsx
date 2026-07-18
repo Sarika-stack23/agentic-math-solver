@@ -31,11 +31,9 @@ const Login: React.FC = () => {
   );
 };
 
-import { SettingsModal } from './components/SettingsModal';
 
 const Sidebar: React.FC<{ isOpen: boolean, closeMenu: () => void }> = ({ isOpen, closeMenu }) => {
   const { logout, user } = useAuth();
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   
   const navStyle = ({ isActive }: { isActive: boolean }) => ({
     display: 'flex',
@@ -83,15 +81,10 @@ const Sidebar: React.FC<{ isOpen: boolean, closeMenu: () => void }> = ({ isOpen,
         <div style={{ padding: '0.5rem', fontSize: '0.9rem', color: 'hsl(var(--text-secondary))', marginBottom: '0.5rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {user?.email}
         </div>
-        <button onClick={() => setIsSettingsOpen(true)} className="btn btn-outline" style={{ width: '100%', justifyContent: 'flex-start' }}>
-          ⚙️ Settings
-        </button>
         <button onClick={() => { closeMenu(); logout(); }} className="btn btn-outline" style={{ width: '100%', justifyContent: 'flex-start' }}>
           <LogOut size={20} /> Sign out
         </button>
       </div>
-      
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
     {isOpen && (
       <div className="mobile-menu-overlay" style={{ display: 'block' }} onClick={closeMenu} />
