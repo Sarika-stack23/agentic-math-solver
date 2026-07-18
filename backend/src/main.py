@@ -80,6 +80,8 @@ app.add_middleware(
 app.include_router(chat.router)
 app.include_router(progress.router)
 
+from backend.src.api.v1 import quiz
+app.include_router(quiz.router, prefix="/api/v1/quiz", tags=["Quiz"])
 
 @app.get("/health")
 async def health_check():
