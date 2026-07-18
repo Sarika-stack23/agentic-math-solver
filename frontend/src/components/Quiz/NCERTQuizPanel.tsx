@@ -112,14 +112,9 @@ export const NCERTQuizPanel: React.FC = () => {
             if (line.startsWith('data: ')) {
                 const dataStr = line.slice(6);
                 if (dataStr.trim() === "[DONE]") continue;
-                try {
-                    const data = JSON.parse(dataStr);
-                    if (data.type === 'message' || data.type === 'token') {
-                        // The stream yields tokens
-                        fullResponse += (data.content || "");
-                        setState(prev => ({ ...prev, feedback: fullResponse, showStuckMenu: false }));
-                    }
-                } catch(e) {}
+                // Backend yields raw string chunks, not JSON
+                fullResponse += dataStr;
+                setState(prev => ({ ...prev, feedback: fullResponse, showStuckMenu: false }));
             }
         }
       }
