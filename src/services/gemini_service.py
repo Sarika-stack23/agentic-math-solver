@@ -176,10 +176,10 @@ class GeminiService:
                         yield chunk.text
             except Exception as e2:
                 logger.error(f"Fallback model {self.fallback_model} streaming also failed: {e2}")
-                logger.info("Falling back to gemini-1.5-flash-8b...")
+                logger.info("Falling back to gemini-flash-lite-latest...")
                 try:
                     response_stream = client.models.generate_content_stream(
-                        model="gemini-1.5-flash-8b",
+                        model="gemini-flash-lite-latest",
                         contents=prompt,
                         config=config
                     )
@@ -251,10 +251,10 @@ class GeminiVisionService:
             )
         except Exception as e:
             logger.error(f"Primary vision model failed: {e}")
-            logger.info("Falling back to gemini-1.5-flash-8b for vision...")
+            logger.info("Falling back to gemini-flash-lite-latest for vision...")
             try:
                 response = client.models.generate_content(
-                    model="gemini-1.5-flash-8b",
+                    model="gemini-flash-lite-latest",
                     contents=[prompt, types.Part.from_bytes(data=image_bytes, mime_type=mime_type)],
                     config=config
                 )
