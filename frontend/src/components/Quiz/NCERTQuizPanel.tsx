@@ -64,7 +64,7 @@ export const NCERTQuizPanel: React.FC = () => {
     setIsLoading(true);
     
     // If asking for 'answer', we already have it parsed from the raw markdown
-    if (action === 'answer') {
+    if (action.includes('Show me the full answer for this')) {
         const parts = state.currentQuestionRaw.split(/Answer:/i);
         if (parts.length > 1) {
             setState(prev => ({ ...prev, feedback: "**Answer:** " + parts[1].trim(), showStuckMenu: false }));
@@ -81,8 +81,8 @@ export const NCERTQuizPanel: React.FC = () => {
       
       const questionText = state.currentQuestionRaw.split(/Answer:/i)[0].trim();
       
-      // We send the query to the standard /chat endpoint (which is a streaming endpoint)
-      const response = await fetch(`http://localhost:8080/api/v1/chat`, {
+      // We send the query to the standard /chat/stream endpoint
+      const response = await fetch(`http://localhost:8080/api/v1/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
