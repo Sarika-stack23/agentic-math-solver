@@ -325,7 +325,7 @@ export const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="main-content" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+    <div className="main-content" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
       <h2 style={{ marginBottom: '1.5rem' }}>Math Assistant</h2>
       
       <div className="glass" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRadius: '12px' }}>
@@ -333,7 +333,7 @@ export const ChatInterface: React.FC = () => {
           <div className="animate-fade-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem', opacity: 0.8 }}>
             <h2 className="text-gradient" style={{ fontSize: '2rem', marginBottom: '1rem' }}>How can I help you learn today?</h2>
             <p style={{ color: 'hsl(var(--text-secondary))', marginBottom: '2rem' }}>Ask any math question or upload a document to get started.</p>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '600px' }}>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '800px' }}>
               {["Solve a quadratic equation", "Explain calculus limits", "Help with trigonometry", "Graph a parabola"].map(q => (
                 <button key={q} className="btn glass-panel" style={{ color: 'hsl(var(--text-primary))', fontSize: '0.9rem' }} onClick={() => setInput(q)}>
                   {q}
