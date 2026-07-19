@@ -16,7 +16,10 @@ export const ProgressDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchProgress = async () => {
-      if (!user) return;
+      if (!user) {
+        setStats({ streak: 0, total_solved: 0, accuracy: 0, weak_topics: [], activity_map: {} });
+        return;
+      }
       try {
         const token = await user.getIdToken();
         const response = await fetch(import.meta.env.VITE_API_URL + '/api/v1/progress', {
@@ -33,10 +36,12 @@ export const ProgressDashboard: React.FC = () => {
             weak_topics: data.weak_topics || [],
             activity_map: data.activity_map || {}
           });
+        } else {
+          // API returned error (401, 500, etc.) — show empty stats instead of loading forever
+          setStats({ streak: 0, total_solved: 0, accuracy: 0, weak_topics: [], activity_map: {} });
         }
       } catch (err) {
         console.error("Failed to fetch progress", err);
-        // Fallback to mock if backend not reachable
         setStats({ streak: 0, total_solved: 0, accuracy: 0, weak_topics: [], activity_map: {} });
       }
     };
