@@ -17,6 +17,9 @@ ENV PATH=/root/.local/bin:$PATH
 # Copy application code
 COPY src /app/backend/src
 
+# Copy knowledge base for quiz parsing
+COPY knowledge-base /app/knowledge-base
+
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV ENVIRONMENT=production
