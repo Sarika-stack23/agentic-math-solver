@@ -161,12 +161,18 @@ graph TD
 ## 📸 Screenshots
 
 <div align="center">
-
-| Dark Mode | Light Mode |
-| :---: | :---: |
-| <img src="screenshots/dark_mode.png" width="400" alt="Dark Mode UI" /> | <img src="screenshots/light_mode.png" width="400" alt="Light Mode UI" /> |
-
+  <table>
+    <tr>
+      <td align="center"><b>💬 AI Chat (Math Solving)</b><br/><img src="screenshots/chat_solving.png" width="400" alt="AI Chat Solving" /></td>
+      <td align="center"><b>📚 NCERT Quiz Engine</b><br/><img src="screenshots/ncert_quiz.png" width="400" alt="NCERT Quiz Engine" /></td>
+    </tr>
+    <tr>
+      <td align="center"><b>📐 Interactive Graphing (SymPy)</b><br/><img src="screenshots/graphing.png" width="400" alt="Interactive Graphing" /></td>
+      <td align="center"><b>📊 Learning Dashboard</b><br/><img src="screenshots/dashboard.png" width="400" alt="Learning Dashboard" /></td>
+    </tr>
+  </table>
 </div>
+
 
 ---
 
