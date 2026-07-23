@@ -20,17 +20,6 @@
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-primary: 0 0% 100%;
-    --bg-secondary: 240 4.8% 95.9%;
-    --text-primary: 240 10% 3.9%;
-    --text-secondary: 240 3.8% 46.1%;
-    --border: 240 5.9% 90%;
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.05);
-  }
-}
 
 * {
   box-sizing: border-box;
